@@ -10,4 +10,7 @@ RUN chmod +x aws-lambda-rie
 FROM public.ecr.aws/lambda/provided:al2.2025.03.11.15 AS run-stage
 COPY --from=build-stage /app/bin/main /bin/main
 COPY --from=build-stage /app/aws-lambda-rie /usr/local/bin/aws-lambda-rie
+ENV DB_USERNAME=user
+ENV DB_PASSWORD=pass 
+ENV DB_HOST=host.docker.internal
 ENTRYPOINT ["/usr/local/bin/aws-lambda-rie", "/bin/main"]
