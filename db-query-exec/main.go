@@ -13,6 +13,7 @@ import (
 type QueryEvent struct {
 	DatabaseName string `json:"database_name"`
 	Query        string `json:"query"`
+	SSLMode      string `json:"ssl_mode"`
 }
 
 func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
@@ -21,11 +22,12 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 	log.Info().Msgf("event: %+v", event)
 
 	dbURL := fmt.Sprintf(
-		"postgres://%s:%s@%s/%s?sslmode=disable",
+		"postgres://%s:%s@%s/%s?sslmode=%s",
 		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
 		event.DatabaseName,
+		event.SSLMode,
 	)
 	log.Info().Msgf("dbURL: %s", dbURL)
 
