@@ -12,5 +12,5 @@ COPY --from=build-stage /app/bin/main /bin/main
 COPY --from=build-stage /app/aws-lambda-rie /usr/local/bin/aws-lambda-rie
 ENV DB_USERNAME=user
 ENV DB_PASSWORD=pass 
-ENV DB_HOST=host.docker.internal
+ENV DB_HOST=host.docker.internal:5432
 ENTRYPOINT ["/usr/local/bin/aws-lambda-rie", "/bin/main"]

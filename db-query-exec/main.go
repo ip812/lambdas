@@ -21,7 +21,7 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 	log.Info().Msgf("event: %+v", event)
 
 	dbURL := fmt.Sprintf(
-		"postgres://%s:%s@%s:5432/%s?sslmode=disable",
+		"postgres://%s:%s@%s/%s?sslmode=disable",
 		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
