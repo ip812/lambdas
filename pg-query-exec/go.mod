@@ -1,4 +1,4 @@
-module github.com/ip812/db-query-exec
+module github.com/ip812/pg-query-exec
 
 go 1.24.1
 

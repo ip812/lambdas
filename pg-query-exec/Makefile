@@ -1,6 +1,6 @@
 run-local:
-	@docker build -f Dockerfile.local -t db-query-exec:test .
-	@docker run -p 9000:8080 db-query-exec:test
+	@docker build -f Dockerfile.local -t pg-query-exec:test .
+	@docker run -p 9000:8080 pg-query-exec:test
 
 invoke-local:
 	curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '$(BODY)'
