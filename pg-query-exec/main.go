@@ -42,8 +42,10 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 	err = row.Scan(&result)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			log.Error().Msg("no rows found")
 			return "", nil
 		}
+		log.Error().Msgf("failed to execute query: %s", err.Error())
 		return "", err
 	}
 
