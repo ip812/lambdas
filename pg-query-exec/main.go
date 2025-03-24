@@ -29,7 +29,6 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 		event.DatabaseName,
 		event.SSLMode,
 	)
-	log.Info().Msgf("dbURL: %s", dbURL)
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
