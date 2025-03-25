@@ -7,14 +7,14 @@ import (
 )
 
 func Handler(ctx context.Context, event interface{}) (interface{}, error) {
-	log := logger(ctx)
-	log.Info().Msgf("Hello, received event is: %v", event)
+	log := GetLogger(ctx)
+	log.Info("Hello, received event is: %v", event)
 	return event, nil
 }
 
 func main() {
 	ctx := context.Background()
-	ctx = inject(ctx, NewLogger().Log)
+	ctx = InjectLogger(ctx, NewLogger())
 
 	lambda.StartWithOptions(Handler, lambda.WithContext(ctx))
 }

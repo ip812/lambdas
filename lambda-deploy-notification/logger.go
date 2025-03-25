@@ -14,7 +14,7 @@ var (
 )
 
 type Logger struct {
-	Log *zerolog.Logger
+	log *zerolog.Logger
 }
 
 func NewLogger() *Logger {
@@ -31,16 +31,32 @@ func NewLogger() *Logger {
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.TimestampFunc = time.Now().UTC
 	return &Logger{
-		Log: &log,
+		log: &log,
 	}
 }
 
-func inject(ctx context.Context, log *zerolog.Logger) context.Context {
+func (l *Logger) Debug(format string, v ...interface{}) {
+	l.log.Debug().Msgf(format, v...)
+}
+
+func (l *Logger) Info(format string, v ...interface{}) {
+	l.log.Info().Msgf(format, v...)
+}
+
+func (l *Logger) Warn(format string, v ...interface{}) {
+	l.log.Warn().Msgf(format, v...)
+}
+
+func (l *Logger) Error(format string, v ...interface{}) {
+	l.log.Error().Msgf(format, v...)
+}
+
+func InjectLogger(ctx context.Context, log *Logger) context.Context {
 	return context.WithValue(ctx, key, log)
 }
 
-func logger(ctx context.Context) *zerolog.Logger {
-	c, ok := ctx.Value(key).(*zerolog.Logger)
+func GetLogger(ctx context.Context) *Logger {
+	c, ok := ctx.Value(key).(*Logger)
 	if !ok {
 		log.Fatal("couldn't get logger from context")
 	}
