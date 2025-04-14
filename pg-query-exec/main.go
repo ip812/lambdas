@@ -4,35 +4,36 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/ip812/pg-query-exec/config"
+	"github.com/ip812/pg-query-exec/logger"
 	_ "github.com/lib/pq"
 )
 
 type QueryEvent struct {
 	DatabaseName string `json:"database_name"`
 	Query        string `json:"query"`
-	SSLMode      string `json:"ssl_mode"`
 }
 
 func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
-	log := logger(ctx)
+	log := logger.Get(ctx)
+	cfg := config.Get(ctx)
 
-	log.Info().Msgf("event: %+v", event)
+	log.Info("event: %+v", event)
 
 	dbURL := fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?sslmode=%s",
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
+		cfg.Database.Username,
+		cfg.Database.Password,
+		cfg.Database.Endpoint,
 		event.DatabaseName,
-		event.SSLMode,
+		cfg.Database.SSLMode,
 	)
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Info().Msgf("failed to connect to database: %s", err.Error())
+		log.Info("failed to connect to database: %s", err.Error())
 		return nil, err
 	}
 	defer db.Close()
@@ -42,20 +43,23 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 	err = row.Scan(&result)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Error().Msg("no rows found")
+			log.Error("no rows found")
 			return "", nil
 		}
-		log.Error().Msgf("failed to execute query: %s", err.Error())
+		log.Error("failed to execute query: %s", err.Error())
 		return "", err
 	}
 
-	log.Info().Msgf("result: %s", result)
+	log.Info("result: %s", result)
 	return result, nil
 }
 
 func main() {
 	ctx := context.Background()
-	ctx = inject(ctx, NewLogger().Log)
+	cfg := config.New()
+	log := logger.New(cfg)
+	ctx = config.Inject(ctx, *cfg)
+	ctx = log.Inject(ctx)
 
 	lambda.StartWithOptions(Handler, lambda.WithContext(ctx))
 }
