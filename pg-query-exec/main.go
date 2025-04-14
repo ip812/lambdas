@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/ip812/pg-query-exec/config"
 	"github.com/ip812/pg-query-exec/logger"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 type QueryEvent struct {
@@ -44,6 +44,10 @@ func Handler(ctx context.Context, event QueryEvent) (interface{}, error) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Error("no rows found")
+			return "", nil
+		}
+		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "42P04" {
+			log.Info("database already exists, ignoring error")
 			return "", nil
 		}
 		log.Error("failed to execute query: %s", err.Error())
