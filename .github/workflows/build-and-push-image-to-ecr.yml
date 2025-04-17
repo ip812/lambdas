@@ -62,7 +62,7 @@ jobs:
         docker push 678468774710.dkr.ecr.eu-central-1.amazonaws.com/ip812/${{ env.NAME }}:${{ env.TAG }}
 
     - name: Trigger update Lambda
-      uses: peter-evans/repository-dispatch@v2
+      uses: peter-evans/repository-dispatch@v3
       with:
         token: ${{ secrets.GH_ACCESS_TOKEN }}
         repository: "ip812/infra"
