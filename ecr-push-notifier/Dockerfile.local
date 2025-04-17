@@ -11,4 +11,6 @@ FROM public.ecr.aws/lambda/provided:al2.2025.03.11.15 AS run-stage
 COPY --from=build-stage /app/bin/main /bin/main
 COPY --from=build-stage /app/aws-lambda-rie /usr/local/bin/aws-lambda-rie
 ENV APP_ENV=local
+ENV GIT_USERNAME=default
+ENV GIT_ACCESS_TOKEN=ghp_default
 ENTRYPOINT ["/usr/local/bin/aws-lambda-rie", "/bin/main"]

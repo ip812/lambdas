@@ -1,6 +1,8 @@
 package config
 
 import (
+	"context"
+	"log"
 	"os"
 )
 
@@ -20,10 +22,31 @@ func (e Environment) IsValid() bool {
 	}
 }
 
+var (
+	key = "CONFIG"
+)
+
 type Config struct {
 	App struct {
 		Env Environment
 	}
+
+	Git struct {
+		Username    string
+		AccessToken string
+	}
+}
+
+func Inject(ctx context.Context, cfg Config) context.Context {
+	return context.WithValue(ctx, key, cfg)
+}
+
+func Get(ctx context.Context) Config {
+	c, ok := ctx.Value(key).(Config)
+	if !ok {
+		log.Fatal("couldn't get config from context")
+	}
+	return c
 }
 
 func New() *Config {
@@ -33,6 +56,9 @@ func New() *Config {
 	if !cfg.App.Env.IsValid() {
 		cfg.App.Env = Prod
 	}
+
+	cfg.Git.Username = os.Getenv("GIT_USERNAME")
+	cfg.Git.AccessToken = os.Getenv("GIT_ACCESS_TOKEN")
 
 	return cfg
 }
