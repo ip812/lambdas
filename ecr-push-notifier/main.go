@@ -83,11 +83,13 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 		return nil, err
 	}
 	defer git.Close()
+	log.Info("Git client initialized")
 
 	if err := git.ReplaceImageTag(); err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
+	log.Info("Image tag replaced")
 
 	if err := git.Push(); err != nil {
 		log.Error(err.Error())
