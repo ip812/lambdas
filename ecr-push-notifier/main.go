@@ -70,6 +70,7 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 		log.Error(err.Error())
 		return nil, err
 	}
+	log.Info("Target: %v", trg)
 
 	git, err := git.New(
 		log,
@@ -92,6 +93,7 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 		log.Error(err.Error())
 		return nil, err
 	}
+	log.Info("Push successful")
 
 	return event, nil
 }
