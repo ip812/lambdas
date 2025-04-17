@@ -5,5 +5,5 @@ To set up the function:
 To test the function locally:
 
 - run `make run-local`
-- run `make invoke-local BODY='{"key": "value"}'`
+- run `make invoke-local'`
 

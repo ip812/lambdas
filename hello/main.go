@@ -19,6 +19,7 @@ func main() {
 	cfg := config.New()
 	log := logger.New(cfg)
 	ctx = log.Inject(ctx)
+	ctx = config.Inject(ctx, *cfg)
 
 	lambda.StartWithOptions(Handler, lambda.WithContext(ctx))
 }

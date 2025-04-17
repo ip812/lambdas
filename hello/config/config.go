@@ -1,6 +1,8 @@
 package config
 
 import (
+	"context"
+	"log"
 	"os"
 )
 
@@ -20,10 +22,26 @@ func (e Environment) IsValid() bool {
 	}
 }
 
+var (
+	key = "CONFIG"
+)
+
 type Config struct {
 	App struct {
 		Env Environment
 	}
+}
+
+func Inject(ctx context.Context, cfg Config) context.Context {
+	return context.WithValue(ctx, key, cfg)
+}
+
+func Get(ctx context.Context) Config {
+	c, ok := ctx.Value(key).(Config)
+	if !ok {
+		log.Fatal("couldn't get config from context")
+	}
+	return c
 }
 
 func New() *Config {
