@@ -107,7 +107,7 @@ func (g *Git) ReplaceImageTag() error {
 func (g *Git) Push() error {
 	_, err := g.worktree.Commit("Update Docker image tag", &git.CommitOptions{
 		Author: &object.Signature{
-			Name:  "Image Updtaer",
+			Name:  fmt.Sprintf("cicd: %s upgraded to %s", g.target.ImageName, g.target.ImageTag),
 			Email: "bot.imageupdater@ip812.com",
 			When:  time.Now().UTC(),
 		},

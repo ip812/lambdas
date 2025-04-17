@@ -54,9 +54,6 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 	log := logger.Get(ctx)
 	cfg := config.Get(ctx)
 
-	log.Info("Username: %v", cfg.Git.Username)
-	log.Info("AccessToken: %v", cfg.Git.AccessToken)
-
 	var detail ECRDetail
 	if err := json.Unmarshal(event.Detail, &detail); err != nil {
 		log.Error("Failed to unmarshal event detail: %v", err)

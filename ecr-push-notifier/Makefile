@@ -16,8 +16,8 @@ invoke-local:
 		"resources": [], \
 		"detail": { \
 			"action-type": "PUSH", \
-			"repository-name": "ip812/ecr-push-notifier", \
-			"image-tag": "69.1.0", \
+			"repository-name": "ip812/hello", \
+			"image-tag": "420.1.0", \
 			"image-digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", \
 			"artifact-media-type": "application/vnd.docker.container.image.v1+json", \
 			"manifest-media-type": "application/vnd.docker.distribution.manifest.v2+json", \
