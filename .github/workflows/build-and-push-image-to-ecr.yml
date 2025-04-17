@@ -60,16 +60,3 @@ jobs:
 
         echo "Pushing image to ECR..."
         docker push 678468774710.dkr.ecr.eu-central-1.amazonaws.com/ip812/${{ env.NAME }}:${{ env.TAG }}
-
-    - name: Trigger update Lambda
-      uses: peter-evans/repository-dispatch@v2
-      with:
-        token: ${{ secrets.GH_ACCESS_TOKEN }}
-        repository: "ip812/infra"
-        event-type: update-lambda-trigger
-        client-payload: |
-          {
-            "image_name": "678468774710.dkr.ecr.eu-central-1.amazonaws.com/ip812/${{ env.NAME }}",
-            "image_tag": "${{ env.TAG }}",
-            "commit_url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-          }
