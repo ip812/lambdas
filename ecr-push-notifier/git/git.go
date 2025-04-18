@@ -16,7 +16,15 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
+type TargetType string
+
+const (
+	Lambda  TargetType = "lambda"
+	Service TargetType = "service"
+)
+
 type Target struct {
+	Type          TargetType
 	RepositroyURL string
 	FilePath      string
 	Branch        string

@@ -35,6 +35,12 @@ type Config struct {
 		Username    string
 		AccessToken string
 	}
+
+	Slack struct {
+		BotToken     string
+		AWSChannelID string
+		K8sChannelID string
+	}
 }
 
 func Inject(ctx context.Context, cfg Config) context.Context {
@@ -59,6 +65,10 @@ func New() *Config {
 
 	cfg.Git.Username = os.Getenv("GIT_USERNAME")
 	cfg.Git.AccessToken = os.Getenv("GIT_ACCESS_TOKEN")
+
+	cfg.Slack.BotToken = os.Getenv("SLACK_BOT_TOKEN")
+	cfg.Slack.AWSChannelID = os.Getenv("SLACK_AWS_CHANNEL_ID")
+	cfg.Slack.K8sChannelID = os.Getenv("SLACK_K8S_CHANNEL_ID")
 
 	return cfg
 }

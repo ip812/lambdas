@@ -10,6 +10,7 @@ import (
 	"github.com/ip812/ecr-push-notifier/config"
 	"github.com/ip812/ecr-push-notifier/git"
 	"github.com/ip812/ecr-push-notifier/logger"
+	"github.com/ip812/ecr-push-notifier/notifier"
 )
 
 type ECRDetail struct {
@@ -27,10 +28,11 @@ var (
 	ErrInvalidDetail = fmt.Errorf("invalid detail")
 )
 
-func pickTarget(detail ECRDetail) (*git.Target, error) {
+func pickGitTarget(detail ECRDetail) (*git.Target, error) {
 	switch detail.RepositoryName {
 	case "ip812/hello", "ip812/pg-query-exec", "ip812/ecr-push-notifier":
 		return &git.Target{
+			Type:          git.Lambda,
 			RepositroyURL: "https://github.com/ip812/infra.git",
 			FilePath:      "prod/lambdas.tf",
 			Branch:        "main",
@@ -39,6 +41,7 @@ func pickTarget(detail ECRDetail) (*git.Target, error) {
 		}, nil
 	case "ip812/go-template":
 		return &git.Target{
+			Type:          git.Service,
 			RepositroyURL: "https://github.com/ip812/apps.git",
 			FilePath:      "manifests/prod/go-template/deployment.yaml",
 			Branch:        "main",
@@ -65,12 +68,20 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 		return nil, ErrInvalidDetail
 	}
 
-	trg, err := pickTarget(detail)
+	trg, err := pickGitTarget(detail)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
 	log.Info("Target: %v", trg)
+
+	notifier := notifier.NewSlack(cfg.Slack.BotToken, log)
+	var slackTargetChannel string
+	if trg.Type == git.Lambda {
+		slackTargetChannel = cfg.Slack.AWSChannelID
+	} else {
+		slackTargetChannel = cfg.Slack.K8sChannelID
+	}
 
 	git, err := git.New(
 		log,
@@ -96,6 +107,16 @@ func Handler(ctx context.Context, event events.EventBridgeEvent) (interface{}, e
 		return nil, err
 	}
 	log.Info("Push successful")
+
+	err = notifier.SendSuccessNotification(
+		slackTargetChannel,
+		detail.RepositoryName,
+		detail.ImageTag,
+	)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
 
 	return event, nil
 }
