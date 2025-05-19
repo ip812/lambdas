@@ -30,17 +30,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Build image
-      run: |
-        cd ${{ env.NAME }}
-        docker build -t ip812/${{ env.NAME }}:${{ env.TAG }} .
-
-    - name: Check if image exists
-      run: |
-        if ! aws ecr describe-repositories --repository-name ip812/${{ env.NAME }} --region ${{ secrets.AWS_REGION }} 2> /dev/null; then
-          aws ecr create-repository --repository-name ip812/${{ env.NAME }} --region ${{ secrets.AWS_REGION }} --image-tag-mutability IMMUTABLE
-        fi
-
     - name: Extract Lambda function name & tag
       run: |
         DATA=${GITHUB_REF#refs/tags/}
@@ -62,6 +51,17 @@ jobs:
         else
           echo "Lambda function directory does not exist"
           exit 1
+        fi
+
+    - name: Build image
+      run: |
+        cd ${{ env.NAME }}
+        docker build -t ip812/${{ env.NAME }}:${{ env.TAG }} .
+
+    - name: Check if image exists
+      run: |
+        if ! aws ecr describe-repositories --repository-name ip812/${{ env.NAME }} --region ${{ secrets.AWS_REGION }} 2> /dev/null; then
+          aws ecr create-repository --repository-name ip812/${{ env.NAME }} --region ${{ secrets.AWS_REGION }} --image-tag-mutability IMMUTABLE
         fi
 
     - name: Tag and Push to ECR
